@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>王溢嘉·賽琪小姐體內的魔鬼 互動測驗 - 100題</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "SimSun", serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .back-btn:hover {
+            background: white;
+            color: #1e3c72;
+            transform: translateX(-3px);
+        }
+
+        .article-info {
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 10px;
+            line-height: 1.8;
+            font-size: 1em;
+            text-align: left;
+        }
+
+        .article-info h3 {
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            margin: 20px 30px;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .question-container {
+            padding: 30px;
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+
+        .question-number {
+            font-size: 1.2em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            margin-bottom: 25px;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option {
+            background: #f5f5f5;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .option:hover {
+            background: #e8e8e8;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .option.correct {
+            background: #4caf50;
+            color: white;
+            border-color: #4caf50;
+        }
+
+        .option.incorrect {
+            background: #f44336;
+            color: white;
+            border-color: #f44336;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .result-container {
+            display: none;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .result-container.active {
+            display: block;
+        }
+
+        .score-display {
+            font-size: 4em;
+            color: #667eea;
+            margin: 30px 0;
+            font-weight: bold;
+        }
+
+        .score-message {
+            font-size: 1.5em;
+            margin-bottom: 30px;
+            color: #333;
+        }
+
+        .result-details {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .result-details h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .start-screen {
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 30px;
+        }
+
+        .start-screen p {
+            font-size: 1.2em;
+            line-height: 2;
+            margin-bottom: 40px;
+            color: #555;
+        }
+
+        .start-screen .btn-primary {
+            padding: 15px 50px;
+            font-size: 1.2em;
+        }
+
+        .feedback {
+            margin-top: 15px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+        }
+
+        .feedback.show {
+            display: block;
+        }
+
+        .feedback.correct {
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 2px solid #4caf50;
+        }
+
+        .feedback.incorrect {
+            background: #ffebee;
+            color: #c62828;
+            border: 2px solid #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header" id="header">
+            <a href="index.html" class="back-btn">← 返回主頁</a>
+            <h1>王溢嘉·賽琪小姐體內的魔鬼</h1>
+            <div class="article-info" id="articleInfo">
+                <h3>文章簡介</h3>
+                <p>
+                    <strong>作者：</strong>王溢嘉<br>
+                    <strong>文體：</strong>科普散文、心理學散文<br>
+                    <strong>主題：</strong>探討人類心理中的潛意識、本我與超我的衝突<br><br>
+                    本文以希臘神話中的賽琪（Psyche）為引子，探討人類心理的複雜性。
+                    作者運用心理學知識，闡述人的內心世界中存在著理性與感性、
+                    意識與潛意識、本我與超我之間的矛盾與掙扎。
+                    文章融合了科學知識與人文思考，深入淺出地解析人性的多重面向。
+                </p>
+            </div>
+        </div>
+
+        <div class="progress-bar" id="progressBar" style="display: none;">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="start-screen" id="startScreen">
+            <h2>歡迎參加《賽琪小姐體內的魔鬼》知識測驗</h2>
+            <p>
+                本測驗共100題，涵蓋文章主旨、心理學概念、寫作技巧、<br>
+                修辭運用、深層思考等多個方面。<br><br>
+                點擊開始按鈕開始測驗，祝你好運！
+            </p>
+            <button class="btn btn-primary" onclick="startTest()">開始測驗</button>
+        </div>
+
+        <div class="question-container" id="questionContainer"></div>
+
+        <div class="result-container" id="resultContainer">
+            <h2>測驗完成！</h2>
+            <div class="score-display" id="scoreDisplay"></div>
+            <div class="score-message" id="scoreMessage"></div>
+            <div class="result-details" id="resultDetails"></div>
+            <button class="btn btn-primary" onclick="restartTest()">重新測驗</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // 第1-10題：作者與背景
+            {
+                question: "《賽琪小姐體內的魔鬼》的作者是誰？",
+                options: ["王鼎鈞", "王溢嘉", "王文興", "王小波"],
+                correct: 1
+            },
+            {
+                question: "作者王溢嘉的專業背景是什麼？",
+                options: ["文學", "醫學、心理學", "哲學", "歷史學"],
+                correct: 1
+            },
+            {
+                question: "這篇文章屬於什麼類型的散文？",
+                options: ["抒情散文", "科普散文、心理學散文", "敘事散文", "遊記散文"],
+                correct: 1
+            },
+            {
+                question: "文章標題中的「賽琪」源自哪裡？",
+                options: ["中國神話", "希臘神話", "北歐神話", "印度神話"],
+                correct: 1
+            },
+            {
+                question: "「Psyche」在希臘文中原意是什麼？",
+                options: ["靈魂、心靈", "身體", "魔鬼", "天使"],
+                correct: 0
+            },
+            {
+                question: "「Psychology」（心理學）這個詞與什麼有關？",
+                options: ["物理學", "Psyche（賽琪）", "哲學", "生物學"],
+                correct: 1
+            },
+            {
+                question: "作者寫作此文的主要目的是？",
+                options: ["講述神話故事", "探討人類心理的複雜性", "批評社會現象", "記錄個人經歷"],
+                correct: 1
+            },
+            {
+                question: "文章主要運用了什麼寫作手法？",
+                options: ["純敘事", "結合神話、科學與哲學的論述", "純抒情", "純描寫"],
+                correct: 1
+            },
+            {
+                question: "王溢嘉的寫作風格特點是？",
+                options: ["艱澀難懂", "深入淺出、融合科學與人文", "純文學性", "口語化"],
+                correct: 1
+            },
+            {
+                question: "這篇文章的文體特色是？",
+                options: ["知性散文", "抒情散文", "敘事散文", "議論文"],
+                correct: 0
+            },
+
+            // 第11-20題：心理學概念
+            {
+                question: "佛洛伊德將人格結構分為哪三個部分？",
+                options: ["身體、靈魂、精神", "本我、自我、超我", "理性、感性、直覺", "意識、前意識、無意識"],
+                correct: 1
+            },
+            {
+                question: "「本我」(Id) 代表什麼？",
+                options: ["道德良知", "原始慾望和本能衝動", "理性思考", "社會規範"],
+                correct: 1
+            },
+            {
+                question: "「超我」(Superego) 代表什麼？",
+                options: ["慾望", "道德良知和社會規範", "理性", "本能"],
+                correct: 1
+            },
+            {
+                question: "「自我」(Ego) 的功能是什麼？",
+                options: ["追求快樂", "在本我和超我之間調節", "壓抑慾望", "放縱本能"],
+                correct: 1
+            },
+            {
+                question: "「潛意識」是指什麼？",
+                options: ["清醒時的思考", "被壓抑在意識之下的心理活動", "理性思維", "邏輯推理"],
+                correct: 1
+            },
+            {
+                question: "文中的「魔鬼」象徵著什麼？",
+                options: ["真正的惡魔", "人內心的黑暗面、本我或潛意識", "外在的誘惑", "疾病"],
+                correct: 1
+            },
+            {
+                question: "心理衝突主要發生在哪些部分之間？",
+                options: ["身體與心靈", "本我與超我", "意識與無意識", "以上皆是"],
+                correct: 3
+            },
+            {
+                question: "「壓抑」在心理學中是什麼意思？",
+                options: ["釋放情緒", "將不被接受的慾望推入潛意識", "表達感受", "放鬆心情"],
+                correct: 1
+            },
+            {
+                question: "人格的健全發展需要什麼？",
+                options: ["完全聽從本我", "完全聽從超我", "本我、自我、超我的平衡", "壓抑所有慾望"],
+                correct: 2
+            },
+            {
+                question: "佛洛伊德認為夢境反映了什麼？",
+                options: ["未來的預言", "潛意識的願望", "隨機的神經活動", "白天的記憶"],
+                correct: 1
+            },
+
+            // 第21-30題：文章內容理解
+            {
+                question: "作者為什麼選擇「賽琪小姐」作為標題人物？",
+                options: ["隨意選擇", "因為Psyche與心理學相關", "這是真實人物", "為了吸引讀者"],
+                correct: 1
+            },
+            {
+                question: "文章中的「體內」指的是什麼？",
+                options: ["生理上的身體內部", "心理、精神層面的內在", "大腦", "心臟"],
+                correct: 1
+            },
+            {
+                question: "作者認為每個人內心都有什麼？",
+                options: ["只有善", "只有惡", "善惡並存、多重人格特質", "一片空白"],
+                correct: 2
+            },
+            {
+                question: "文章探討的核心問題是？",
+                options: ["如何成功", "人性的複雜性與內心衝突", "如何賺錢", "如何交友"],
+                correct: 1
+            },
+            {
+                question: "作者對人性的看法是？",
+                options: ["人性本善", "人性本惡", "人性是複雜的、多面的", "人性不存在"],
+                correct: 2
+            },
+            {
+                question: "文章提到的「天使與魔鬼」的對立象徵什麼？",
+                options: ["宗教信仰", "內心的善惡、理性與慾望的衝突", "真實的靈異現象", "道德教條"],
+                correct: 1
+            },
+            {
+                question: "作者認為壓抑慾望會導致什麼？",
+                options: ["心理健康", "心理問題或扭曲", "道德提升", "沒有影響"],
+                correct: 1
+            },
+            {
+                question: "文章強調了解自己的什麼很重要？",
+                options: ["外表", "潛意識和內心深處", "社會地位", "財富"],
+                correct: 1
+            },
+            {
+                question: "作者的寫作態度是？",
+                options: ["批判的", "客觀分析的", "諷刺的", "消極的"],
+                correct: 1
+            },
+            {
+                question: "文章想傳達的訊息是？",
+                options: ["人應該壓抑所有慾望", "認識並接納自己的多面性", "人性本惡", "追求完美"],
+                correct: 1
+            },
+
+            // 第31-40題：修辭與寫作技巧
+            {
+                question: "文章標題使用了什麼修辭手法？",
+                options: ["明喻", "暗喻、擬人", "誇飾", "對偶"],
+                correct: 1
+            },
+            {
+                question: "「魔鬼」一詞的使用是什麼修辭？",
+                options: ["直述", "隱喻", "誇飾", "借代"],
+                correct: 1
+            },
+            {
+                question: "作者將希臘神話與心理學結合屬於什麼手法？",
+                options: ["純想像", "類比、旁徵博引", "抄襲", "牽強附會"],
+                correct: 1
+            },
+            {
+                question: "文章的論述結構是？",
+                options: ["散亂無序", "由神話引入，到科學分析，再到哲學思考", "純敘事", "純抒情"],
+                correct: 1
+            },
+            {
+                question: "作者使用神話故事的目的是？",
+                options: ["湊字數", "增加趣味性並引出主題", "賣弄學問", "無目的"],
+                correct: 1
+            },
+            {
+                question: "文章的語言風格是？",
+                options: ["艱澀專業", "深入淺出、雅俗共賞", "口語化", "詩意朦朧"],
+                correct: 1
+            },
+            {
+                question: "作者運用了什麼論證方法？",
+                options: ["只有舉例", "結合理論闡述、比喻和引用", "只有數據", "只有引用"],
+                correct: 1
+            },
+            {
+                question: "「天使與魔鬼」的對比使用了什麼手法？",
+                options: ["對比、象徵", "誇飾", "排比", "頂真"],
+                correct: 0
+            },
+            {
+                question: "文章的標題有什麼特點？",
+                options: ["平淡無奇", "富有吸引力和隱喻性", "過於直白", "無意義"],
+                correct: 1
+            },
+            {
+                question: "作者的敘述視角是？",
+                options: ["第一人稱主觀", "第三人稱客觀分析", "第二人稱", "多重視角"],
+                correct: 1
+            },
+
+            // 第41-50題：主旨與深層意義
+            {
+                question: "文章的主旨是什麼？",
+                options: ["宣揚宗教", "探討人性的複雜與內心衝突", "批評社會", "講述愛情"],
+                correct: 1
+            },
+            {
+                question: "作者希望讀者如何對待自己的「魔鬼」？",
+                options: ["徹底消滅", "認識、理解並與之共處", "放任不管", "假裝不存在"],
+                correct: 1
+            },
+            {
+                question: "文章對「完美人格」的看法是？",
+                options: ["人應該追求完美", "完美不存在，接納不完美才真實", "完美很容易達到", "完美不重要"],
+                correct: 1
+            },
+            {
+                question: "「魔鬼」的存在說明了什麼？",
+                options: ["人性本惡", "人性的多面性是正常的", "人有缺陷", "人需要改造"],
+                correct: 1
+            },
+            {
+                question: "作者對道德壓抑的態度是？",
+                options: ["完全贊成", "認為過度壓抑有害", "無所謂", "強烈反對道德"],
+                correct: 1
+            },
+            {
+                question: "文章傳達的人生智慧是？",
+                options: ["隱藏真實自我", "認識並接納完整的自己", "追求功名", "逃避現實"],
+                correct: 1
+            },
+            {
+                question: "「賽琪小姐」代表什麼？",
+                options: ["特定某人", "每個人的心靈", "女性", "神話人物"],
+                correct: 1
+            },
+            {
+                question: "文章對「善」與「惡」的看法是？",
+                options: ["絕對對立", "相對的、共存的", "善一定勝惡", "惡一定勝善"],
+                correct: 1
+            },
+            {
+                question: "了解「體內的魔鬼」有什麼意義？",
+                options: ["沒意義", "有助於自我認識和心理健康", "會變壞", "會失去理性"],
+                correct: 1
+            },
+            {
+                question: "文章的人文關懷體現在？",
+                options: ["批判人性", "理解和包容人性的複雜", "道德說教", "冷漠觀察"],
+                correct: 1
+            },
+
+            // 第51-60題：希臘神話相關
+            {
+                question: "希臘神話中的賽琪是誰？",
+                options: ["女神", "凡間美女，後成為愛神之妻", "女妖", "女戰士"],
+                correct: 1
+            },
+            {
+                question: "賽琪的丈夫是誰？",
+                options: ["宙斯", "厄洛斯（愛神丘比特）", "阿波羅", "赫菲斯托斯"],
+                correct: 1
+            },
+            {
+                question: "賽琪的故事主要講述什麼？",
+                options: ["戰爭", "愛情與考驗", "復仇", "冒險"],
+                correct: 1
+            },
+            {
+                question: "賽琪最終的結局是？",
+                options: ["死亡", "成為女神，與愛神永遠在一起", "被放逐", "孤獨終老"],
+                correct: 1
+            },
+            {
+                question: "作者引用賽琪神話的寓意是？",
+                options: ["講愛情故事", "象徵靈魂的追尋與蛻變", "娛樂讀者", "填充內容"],
+                correct: 1
+            },
+            {
+                question: "「Psyche」後來演變成什麼學科？",
+                options: ["物理學", "心理學 (Psychology)", "社會學", "人類學"],
+                correct: 1
+            },
+            {
+                question: "賽琪在神話中經歷了什麼？",
+                options: ["一帆風順", "重重考驗和磨難", "平淡生活", "戰爭"],
+                correct: 1
+            },
+            {
+                question: "神話中賽琪的美貌引起了誰的嫉妒？",
+                options: ["雅典娜", "阿芙蘿黛蒂（維納斯）", "赫拉", "阿爾忒彌斯"],
+                correct: 1
+            },
+            {
+                question: "賽琪與愛神的故事象徵什麼？",
+                options: ["權力鬥爭", "靈魂與愛的結合、成長與蛻變", "財富追求", "復仇"],
+                correct: 1
+            },
+            {
+                question: "作者使用神話的效果是？",
+                options: ["使文章艱澀", "增加文章的文化深度和趣味性", "炫耀知識", "無作用"],
+                correct: 1
+            },
+
+            // 第61-70題：心理健康與自我認識
+            {
+                question: "了解自己的潛意識有什麼好處？",
+                options: ["沒有好處", "有助於心理健康和自我成長", "會變得軟弱", "會失去道德"],
+                correct: 1
+            },
+            {
+                question: "過度壓抑本能會導致什麼？",
+                options: ["道德高尚", "心理疾病或人格扭曲", "社會和諧", "沒有影響"],
+                correct: 1
+            },
+            {
+                question: "健康的人格應該是？",
+                options: ["完全理性", "完全感性", "理性與感性的平衡", "沒有慾望"],
+                correct: 2
+            },
+            {
+                question: "接納自己的「陰暗面」意味著？",
+                options: ["變壞", "完整地認識自己", "放縱慾望", "道德淪喪"],
+                correct: 1
+            },
+            {
+                question: "文章認為「魔鬼」可以被消滅嗎？",
+                options: ["可以完全消滅", "無法也不必完全消滅，應理解和控制", "應該消滅", "會自己消失"],
+                correct: 1
+            },
+            {
+                question: "自我認識的重要性在於？",
+                options: ["炫耀", "了解自己才能更好地生活", "沒有重要性", "控制他人"],
+                correct: 1
+            },
+            {
+                question: "心理衝突是？",
+                options: ["不正常的", "人類普遍存在的現象", "疾病", "需要治療"],
+                correct: 1
+            },
+            {
+                question: "文章對「做自己」的理解是？",
+                options: ["放縱一切", "認識並接納真實的自己", "偽裝", "逃避"],
+                correct: 1
+            },
+            {
+                question: "心理學的價值在於？",
+                options: ["治療疾病", "幫助人們認識和理解自己", "控制他人", "賺錢"],
+                correct: 1
+            },
+            {
+                question: "面對內心衝突的態度應該是？",
+                options: ["逃避", "正視並理解", "壓抑", "放縱"],
+                correct: 1
+            },
+
+            // 第71-80題：哲學思考
+            {
+                question: "文章涉及的哲學問題是？",
+                options: ["認識論", "人性論、倫理學", "邏輯學", "美學"],
+                correct: 1
+            },
+            {
+                question: "「認識你自己」是哪位哲學家的名言？",
+                options: ["亞里斯多德", "蘇格拉底", "柏拉圖", "康德"],
+                correct: 1
+            },
+            {
+                question: "人性的二元性指的是？",
+                options: ["男女", "善惡並存、理性與感性共存", "貧富", "強弱"],
+                correct: 1
+            },
+            {
+                question: "文章對道德的看法是？",
+                options: ["絕對標準", "需要平衡，過度壓抑有害", "不重要", "可有可無"],
+                correct: 1
+            },
+            {
+                question: "自由意志與本能衝動的關係是？",
+                options: ["對立的", "需要平衡", "自由意志不存在", "本能應該被消滅"],
+                correct: 1
+            },
+            {
+                question: "文章體現了什麼哲學觀？",
+                options: ["絕對主義", "辯證思維、相對主義", "虛無主義", "功利主義"],
+                correct: 1
+            },
+            {
+                question: "「真實的自我」包含什麼？",
+                options: ["只有優點", "只有缺點", "優缺點、光明與陰暗的全部", "表面形象"],
+                correct: 2
+            },
+            {
+                question: "文章對「完美」的態度是？",
+                options: ["追求完美", "接納不完美才是真實", "完美很重要", "完美很容易"],
+                correct: 1
+            },
+            {
+                question: "人的價值在於？",
+                options: ["財富", "認識並實現真實的自己", "地位", "外表"],
+                correct: 1
+            },
+            {
+                question: "文章的人生哲學是？",
+                options: ["逃避現實", "誠實面對並接納自己", "追求功名", "及時行樂"],
+                correct: 1
+            },
+
+            // 第81-90題：現實意義與應用
+            {
+                question: "這篇文章對現代人的啟示是？",
+                options: ["沒有啟示", "認識自己，接納不完美", "追求完美", "壓抑慾望"],
+                correct: 1
+            },
+            {
+                question: "文章對心理健康的貢獻是？",
+                options: ["沒有貢獻", "提醒人們關注內心世界", "製造恐慌", "無關緊要"],
+                correct: 1
+            },
+            {
+                question: "在現代社會，了解心理學有什麼用？",
+                options: ["沒有用", "幫助自我成長和人際關係", "炫耀", "浪費時間"],
+                correct: 1
+            },
+            {
+                question: "文章對教育的啟示是？",
+                options: ["嚴格管教", "應該重視心理教育和自我認識", "放任不管", "只重成績"],
+                correct: 1
+            },
+            {
+                question: "面對壓力時，文章的建議是？",
+                options: ["逃避", "了解壓力來源，正視內心衝突", "壓抑", "發洩"],
+                correct: 1
+            },
+            {
+                question: "文章對人際關係的啟發是？",
+                options: ["控制他人", "了解自己才能理解他人", "孤立自己", "不需要朋友"],
+                correct: 1
+            },
+            {
+                question: "這篇文章的普世價值是？",
+                options: ["只適用某些人", "對所有人都有啟發意義", "過時了", "沒有價值"],
+                correct: 1
+            },
+            {
+                question: "文章對「做自己」的現代意義是？",
+                options: ["隨心所欲", "認識真實自我，不盲從", "自私自利", "不顧他人"],
+                correct: 1
+            },
+            {
+                question: "文章對現代人常見的焦慮有何解答？",
+                options: ["無解", "認識自己，接納不完美可減輕焦慮", "增加焦慮", "逃避"],
+                correct: 1
+            },
+            {
+                question: "這篇文章的跨學科特色是？",
+                options: ["只有文學", "融合心理學、哲學、神話與文學", "只有科學", "沒有特色"],
+                correct: 1
+            },
+
+            // 第91-100題：綜合理解與評價
+            {
+                question: "文章最大的特色是？",
+                options: ["華麗辭藻", "科學與人文的結合", "純文學性", "說教性"],
+                correct: 1
+            },
+            {
+                question: "作者的寫作目的是？",
+                options: ["賺錢", "啟發讀者思考人性", "炫耀知識", "娛樂"],
+                correct: 1
+            },
+            {
+                question: "文章的深度來自於？",
+                options: ["長度", "多學科的融合與深刻的思考", "複雜的詞彙", "引用多"],
+                correct: 1
+            },
+            {
+                question: "這篇文章適合什麼讀者？",
+                options: ["只有專業人士", "所有關心自我成長的讀者", "只有學生", "只有老年人"],
+                correct: 1
+            },
+            {
+                question: "文章的說服力來自？",
+                options: ["作者的權威", "理論與比喻的結合、邏輯清晰", "情感訴求", "誇大其詞"],
+                correct: 1
+            },
+            {
+                question: "文章的結構特點是？",
+                options: ["雜亂無章", "層次分明，由表及裡", "重複累贅", "過於簡單"],
+                correct: 1
+            },
+            {
+                question: "文章對讀者的要求是？",
+                options: ["不需思考", "需要思考和反省", "背誦", "批判"],
+                correct: 1
+            },
+            {
+                question: "文章的可讀性如何？",
+                options: ["艱澀難懂", "深入淺出，雅俗共賞", "過於簡單", "無聊"],
+                correct: 1
+            },
+            {
+                question: "這篇文章在文學上的價值是？",
+                options: ["沒有價值", "知性散文的典範", "純科普", "純文學"],
+                correct: 1
+            },
+            {
+                question: "讀完這篇文章，讀者應該？",
+                options: ["忘記它", "反思自己的內心世界", "批評它", "恐懼"],
+                correct: 1
+            }
+        ];
+
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let score = 0;
+
+        function startTest() {
+            document.getElementById('startScreen').style.display = 'none';
+            document.getElementById('articleInfo').style.display = 'none';
+            document.getElementById('progressBar').style.display = 'block';
+            showQuestion(0);
+        }
+
+        function showQuestion(index) {
+            const container = document.getElementById('questionContainer');
+            const question = questions[index];
+
+            container.className = 'question-container active';
+            container.innerHTML = `
+                <div class="question-header">
+                    <span class="question-number">第 ${index + 1} 題 / 共 100 題</span>
+                    <span>已完成: ${userAnswers.length}/100</span>
+                </div>
+                <div class="question-text">${question.question}</div>
+                <div class="options">
+                    ${question.options.map((option, i) => `
+                        <div class="option" onclick="selectOption(${i})" data-index="${i}">
+                            ${String.fromCharCode(65 + i)}. ${option}
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="feedback" id="feedback"></div>
+                <div class="navigation">
+                    <button class="btn btn-secondary" onclick="previousQuestion()" ${index === 0 ? 'disabled' : ''}>
+                        上一題
+                    </button>
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
+                        ${index === questions.length - 1 ? '完成測驗' : '下一題'}
+                    </button>
+                </div>
+            `;
+
+            if (userAnswers[index] !== undefined) {
+                const options = container.querySelectorAll('.option');
+                options[userAnswers[index]].classList.add('selected');
+                document.getElementById('nextBtn').disabled = false;
+            }
+
+            updateProgress();
+        }
+
+        function selectOption(optionIndex) {
+            const options = document.querySelectorAll('.option');
+            const feedback = document.getElementById('feedback');
+            const question = questions[currentQuestion];
+
+            options.forEach(opt => {
+                opt.classList.remove('selected', 'correct', 'incorrect');
+            });
+
+            options[optionIndex].classList.add('selected');
+            userAnswers[currentQuestion] = optionIndex;
+
+            if (optionIndex === question.correct) {
+                feedback.className = 'feedback show correct';
+                feedback.textContent = '✓ 回答正確！';
+                options[optionIndex].classList.add('correct');
+            } else {
+                feedback.className = 'feedback show incorrect';
+                feedback.textContent = `✗ 回答錯誤。正確答案是：${String.fromCharCode(65 + question.correct)}. ${question.options[question.correct]}`;
+                options[optionIndex].classList.add('incorrect');
+                options[question.correct].classList.add('correct');
+            }
+
+            document.getElementById('nextBtn').disabled = false;
+        }
+
+        function nextQuestion() {
+            if (userAnswers[currentQuestion] === undefined) {
+                alert('請選擇一個答案');
+                return;
+            }
+
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            } else {
+                showResults();
+            }
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function showResults() {
+            score = 0;
+            for (let i = 0; i < questions.length; i++) {
+                if (userAnswers[i] === questions[i].correct) {
+                    score++;
+                }
+            }
+
+            const percentage = (score / questions.length * 100).toFixed(1);
+
+            let message = '';
+            if (percentage >= 90) {
+                message = '優秀！您對本文的理解非常深入！';
+            } else if (percentage >= 80) {
+                message = '良好！您對本文有很好的理解！';
+            } else if (percentage >= 70) {
+                message = '不錯！繼續加油！';
+            } else if (percentage >= 60) {
+                message = '及格了！還有提升空間！';
+            } else {
+                message = '需要加強對本文的學習哦！';
+            }
+
+            document.getElementById('questionContainer').classList.remove('active');
+            const resultContainer = document.getElementById('resultContainer');
+            resultContainer.classList.add('active');
+
+            document.getElementById('scoreDisplay').textContent = `${score}/100`;
+            document.getElementById('scoreMessage').textContent = message;
+
+            const details = document.getElementById('resultDetails');
+            details.innerHTML = `
+                <h3>測驗統計</h3>
+                <div class="detail-item">
+                    <span>正確率：</span>
+                    <span><strong>${percentage}%</strong></span>
+                </div>
+                <div class="detail-item">
+                    <span>答對題數：</span>
+                    <span><strong>${score} 題</strong></span>
+                </div>
+                <div class="detail-item">
+                    <span>答錯題數：</span>
+                    <span><strong>${questions.length - score} 題</strong></span>
+                </div>
+            `;
+
+            updateProgress();
+        }
+
+        function restartTest() {
+            currentQuestion = 0;
+            userAnswers = [];
+            score = 0;
+            document.getElementById('resultContainer').classList.remove('active');
+            document.getElementById('startScreen').style.display = 'block';
+            document.getElementById('articleInfo').style.display = 'block';
+            document.getElementById('progressBar').style.display = 'none';
+            document.getElementById('progressFill').style.width = '0%';
+        }
+    </script>
+</body>
+</html>

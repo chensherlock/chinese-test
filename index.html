@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>詩經測驗系統</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "SimSun", serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            margin-bottom: 15px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 50px 40px;
+        }
+
+        .intro {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .intro h2 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+
+        .intro p {
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #555;
+            max-width: 700px;
+            margin: 0 auto;
+        }
+
+        .chapters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 40px;
+        }
+
+        .chapter-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 12px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .chapter-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .chapter-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .chapter-number {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            line-height: 50px;
+            text-align: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .chapter-title {
+            font-size: 1.8em;
+            color: #333;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .chapter-description {
+            font-size: 1em;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .chapter-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid rgba(0,0,0,0.1);
+        }
+
+        .question-count {
+            font-size: 0.9em;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+
+        .start-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .footer {
+            background: #f5f5f5;
+            padding: 30px;
+            text-align: center;
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .coming-soon {
+            opacity: 0.6;
+            pointer-events: none;
+            position: relative;
+        }
+
+        .coming-soon::after {
+            content: '即將推出';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+
+            .chapters-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                padding: 30px 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>中國古典文學測驗系統</h1>
+            <p>探索中國古代文學的魅力</p>
+        </div>
+
+        <div class="content">
+            <div class="intro">
+                <h2>歡迎來到中國古典文學測驗系統</h2>
+                <p>
+                    探索中國古典文學的瑰寶，從《詩經》到《楚辭》，感受千年文化的魅力。
+                    通過這個測驗系統，您可以深入學習和理解這些經典作品的內容、意境和文化內涵。
+                    每個章節都包含100道精心設計的題目，幫助您全面掌握古典文學知識。
+                </p>
+            </div>
+
+            <div class="chapters-grid">
+                <div class="chapter-card" onclick="location.href='jianjia-test.html'">
+                    <div class="chapter-number">1</div>
+                    <div class="chapter-title">蒹葭</div>
+                    <div class="chapter-description">
+                        秦風中最著名的詩篇之一，描寫對心中所愛之人的追尋與思念，
+                        意境深遠，被譽為《詩經》中最美的愛情詩之一。
+                    </div>
+                    <div class="chapter-info">
+                        <span class="question-count">📝 100題</span>
+                        <button class="start-btn">開始測驗</button>
+                    </div>
+                </div>
+
+                <div class="chapter-card" onclick="location.href='yufu-test.html'">
+                    <div class="chapter-number">2</div>
+                    <div class="chapter-title">漁夫</div>
+                    <div class="chapter-description">
+                        屈原的經典作品，通過屈原與漁父的對話，
+                        展現了堅守理想與隨遇而安兩種人生哲學的碰撞。
+                    </div>
+                    <div class="chapter-info">
+                        <span class="question-count">📝 100題</span>
+                        <button class="start-btn">開始測驗</button>
+                    </div>
+                </div>
+
+                <div class="chapter-card" onclick="location.href='saiqi-test.html'">
+                    <div class="chapter-number">3</div>
+                    <div class="chapter-title">賽琪小姐體內的魔鬼</div>
+                    <div class="chapter-description">
+                        王溢嘉的知性散文，探討人性的複雜性，
+                        融合心理學、哲學與神話，深入剖析人類內心世界。
+                    </div>
+                    <div class="chapter-info">
+                        <span class="question-count">📝 100題</span>
+                        <button class="start-btn">開始測驗</button>
+                    </div>
+                </div>
+
+                <div class="chapter-card" onclick="location.href='zhuzhiwu-test.html'">
+                    <div class="chapter-number">4</div>
+                    <div class="chapter-title">燭之武退秦師</div>
+                    <div class="chapter-description">
+                        《左傳》經典篇章，記錄燭之武憑藉卓越的外交辭令，
+                        不費一兵一卒成功化解鄭國危機的歷史事件。
+                    </div>
+                    <div class="chapter-info">
+                        <span class="question-count">📝 100題</span>
+                        <button class="start-btn">開始測驗</button>
+                    </div>
+                </div>
+
+                <div class="chapter-card" onclick="location.href='tiangong-test.html'">
+                    <div class="chapter-number">5</div>
+                    <div class="chapter-title">天工開物</div>
+                    <div class="chapter-description">
+                        宋應星的科技巨著，記錄明代農業和手工業技術，
+                        涵蓋舟車、膏液、殺青等工藝的起源與發展。
+                    </div>
+                    <div class="chapter-info">
+                        <span class="question-count">📝 100題</span>
+                        <button class="start-btn">開始測驗</button>
+                    </div>
+                </div>
+
+                <div class="chapter-card" onclick="location.href='kongyiji-test.html'">
+                    <div class="chapter-number">6</div>
+                    <div class="chapter-title">孔乙己</div>
+                    <div class="chapter-description">
+                        魯迅的經典短篇小說，通過孔乙己的悲劇人生，
+                        深刻批判封建科舉制度和冷漠的社會環境。
+                    </div>
+                    <div class="chapter-info">
+                        <span class="question-count">📝 100題</span>
+                        <button class="start-btn">開始測驗</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>© 2025 中國古典文學測驗系統 | 傳承中華文化，弘揚經典精神</p>
+        </div>
+    </div>
+</body>
+</html>

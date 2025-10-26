@@ -418,8 +418,17 @@
         let defaultQuestionCount = 0;
         let selectedQuestions = [];
         let userAnswers = [];
+        let answerOrders = [];
+        let autoAdvanceTimeout = null;
         let currentQuestion = 0;
         let score = 0;
+
+        function clearAutoAdvanceTimer() {
+            if (autoAdvanceTimeout !== null) {
+                clearTimeout(autoAdvanceTimeout);
+                autoAdvanceTimeout = null;
+            }
+        }
 
         function init() {
             if (!quizId) {
@@ -449,19 +458,21 @@
         function setupQuiz(data) {
             quizData = data;
             questions = Array.isArray(data.questions) ? data.questions : [];
-            questionCounts = normalizeQuestionCounts(data.questionCounts, questions.length);
+            const totalQuestions = questions.length;
+            questionCounts = normalizeQuestionCounts(data.questionCounts, totalQuestions);
 
-            defaultQuestionCount = questionCounts[questionCounts.length - 1] || (questions.length || DEFAULT_SELECTED_COUNT);
+            defaultQuestionCount = questionCounts[questionCounts.length - 1] || (totalQuestions || DEFAULT_SELECTED_COUNT);
 
             if (questionCounts.includes(DEFAULT_SELECTED_COUNT)) {
-                selectedQuestionCount = DEFAULT_SELECTED_COUNT;
+                selectedQuestionCount = Math.min(DEFAULT_SELECTED_COUNT, totalQuestions || DEFAULT_SELECTED_COUNT);
             } else {
-                selectedQuestionCount = Math.min(defaultQuestionCount, questions.length || defaultQuestionCount);
+                selectedQuestionCount = Math.min(defaultQuestionCount, totalQuestions || defaultQuestionCount);
             }
 
             displayName = data.title ? (data.title.includes('·') ? data.title.split('·').pop() : data.title) : '測驗';
 
-            document.title = data.pageTitle || `${data.title || '互動測驗'}`;
+            const baseTitle = data.pageTitle || data.title || '互動測驗';
+            document.title = totalQuestions ? `${baseTitle}（共${totalQuestions}題）` : baseTitle;
             document.getElementById('quizTitle').textContent = data.title || '互動測驗';
 
             if (data.contentHtml) {
@@ -479,9 +490,16 @@
             welcomeTitleEl.textContent = data.welcomeTitle || `歡迎參加《${displayName}》知識測驗`;
 
             if (data.welcomeMessageHtml) {
-                welcomeMessageEl.innerHTML = data.welcomeMessageHtml.replace(/\r/g, '');
+                const html = data.welcomeMessageHtml
+                    .replace(/\r/g, '')
+                    .replace(/\{\{count\}\}/g, totalQuestions)
+                    .replace(/\{count\}/g, totalQuestions);
+                welcomeMessageEl.innerHTML = html;
             } else if (data.welcomeMessage) {
-                welcomeMessageEl.textContent = data.welcomeMessage;
+                const text = data.welcomeMessage
+                    .replace(/\{\{count\}\}/g, totalQuestions)
+                    .replace(/\{count\}/g, totalQuestions);
+                welcomeMessageEl.textContent = text;
             } else {
                 welcomeMessageEl.textContent = '請選擇測驗題數，祝你好運！';
             }
@@ -489,8 +507,8 @@
             renderQuestionCounts();
 
             startButton.textContent = '開始測驗';
-            startButton.disabled = questions.length === 0;
-            if (questions.length === 0) {
+            startButton.disabled = totalQuestions === 0;
+            if (totalQuestions === 0) {
                 startButton.textContent = '題庫暫不可用';
             }
         }
@@ -560,14 +578,18 @@
                 return;
             }
 
-            if (!questions.length) {
+            const total = questions.length;
+
+            if (!total) {
                 alert('題庫暫不可用，請稍後再試。');
                 return;
             }
 
-            selectedQuestionCount = Math.min(selectedQuestionCount, questions.length);
-            selectedQuestions = shuffleIndices(questions.length).slice(0, selectedQuestionCount);
+            clearAutoAdvanceTimer();
+            selectedQuestionCount = Math.min(selectedQuestionCount, total);
+            selectedQuestions = shuffleIndices(total).slice(0, selectedQuestionCount);
             userAnswers = Array(selectedQuestionCount).fill(null);
+            answerOrders = Array(selectedQuestionCount).fill(null);
             currentQuestion = 0;
             score = 0;
 
@@ -585,10 +607,16 @@
         }
 
         function showQuestion(index) {
+            clearAutoAdvanceTimer();
             currentQuestion = index;
             const questionIndex = selectedQuestions[index];
             const question = questions[questionIndex];
             const answeredCount = userAnswers.filter(answer => answer !== null).length;
+
+            if (!answerOrders[index] || answerOrders[index].length !== question.options.length) {
+                answerOrders[index] = shuffleIndices(question.options.length);
+            }
+            const optionOrder = answerOrders[index];
 
             questionContainer.className = 'question-container active';
             questionContainer.innerHTML = `
@@ -598,9 +626,9 @@
                 </div>
                 <div class=\"question-text\">${question.question}</div>
                 <div class=\"options\">
-                    ${question.options.map((option, i) => `
-                        <div class=\"option\" onclick=\"selectOption(${i})\" data-index=\"${i}\">
-                            ${String.fromCharCode(65 + i)}. ${option}
+                    ${optionOrder.map((optionIndex, displayIndex) => `
+                        <div class=\"option\" data-display-index=\"${displayIndex}\" data-original-index=\"${optionIndex}\" onclick=\"selectOption(${displayIndex})\">
+                            ${String.fromCharCode(65 + displayIndex)}. ${question.options[optionIndex]}
                         </div>
                     `).join('')}
                 </div>
@@ -615,42 +643,93 @@
                 </div>
             `;
 
+            const options = questionContainer.querySelectorAll('.option');
+            const nextBtn = document.getElementById('nextBtn');
             if (userAnswers[index] !== null) {
-                const options = questionContainer.querySelectorAll('.option');
-                options[userAnswers[index]].classList.add('selected');
+                const selectedOriginal = userAnswers[index];
+                const displayIndex = optionOrder.indexOf(selectedOriginal);
+                const feedback = document.getElementById('feedback');
+                const correctDisplayIndex = optionOrder.indexOf(question.correct);
+                const correctLabel = correctDisplayIndex !== -1 ? String.fromCharCode(65 + correctDisplayIndex) : '正確選項';
+
+                if (displayIndex !== -1) {
+                    options[displayIndex].classList.add('selected');
+                    if (nextBtn) {
+                        nextBtn.disabled = false;
+                    }
+
+                    if (selectedOriginal === question.correct) {
+                        feedback.className = 'feedback show correct';
+                        feedback.textContent = '✓ 回答正確！';
+                        options[displayIndex].classList.add('correct');
+                    } else {
+                        feedback.className = 'feedback show incorrect';
+                        feedback.textContent = `✗ 回答錯誤。正確答案是：${correctLabel}. ${question.options[question.correct]}`;
+                        options[displayIndex].classList.add('incorrect');
+                        if (correctDisplayIndex !== -1) {
+                            options[correctDisplayIndex].classList.add('correct');
+                        }
+                    }
+                }
             }
 
             updateProgress();
         }
 
         function selectOption(optionIndex) {
+            clearAutoAdvanceTimer();
             const options = questionContainer.querySelectorAll('.option');
             const feedback = document.getElementById('feedback');
             const questionIndex = selectedQuestions[currentQuestion];
             const question = questions[questionIndex];
+            let optionOrder = answerOrders[currentQuestion];
+            if (!optionOrder || optionOrder.length !== options.length) {
+                optionOrder = Array.from(options).map(opt => Number(opt.dataset.originalIndex));
+                answerOrders[currentQuestion] = optionOrder;
+            }
+            const originalIndex = optionOrder[optionIndex];
 
             options.forEach(opt => {
                 opt.classList.remove('selected', 'correct', 'incorrect');
             });
 
             options[optionIndex].classList.add('selected');
-            userAnswers[currentQuestion] = optionIndex;
+            userAnswers[currentQuestion] = originalIndex;
 
-            if (optionIndex === question.correct) {
+            const correctDisplayIndex = optionOrder.indexOf(question.correct);
+            const correctLabel = correctDisplayIndex !== -1 ? String.fromCharCode(65 + correctDisplayIndex) : '正確選項';
+
+            if (originalIndex === question.correct) {
                 feedback.className = 'feedback show correct';
                 feedback.textContent = '✓ 回答正確！';
                 options[optionIndex].classList.add('correct');
+                scheduleAutoAdvance();
             } else {
                 feedback.className = 'feedback show incorrect';
-                feedback.textContent = `✗ 回答錯誤。正確答案是：${String.fromCharCode(65 + question.correct)}. ${question.options[question.correct]}`;
+                feedback.textContent = `✗ 回答錯誤。正確答案是：${correctLabel}. ${question.options[question.correct]}`;
                 options[optionIndex].classList.add('incorrect');
-                options[question.correct].classList.add('correct');
+                const correctOption = correctDisplayIndex !== -1 ? options[correctDisplayIndex] : null;
+                if (correctOption) {
+                    correctOption.classList.add('correct');
+                }
             }
 
-            document.getElementById('nextBtn').disabled = false;
+            const nextBtn = document.getElementById('nextBtn');
+            if (nextBtn) {
+                nextBtn.disabled = false;
+            }
+        }
+
+        function scheduleAutoAdvance() {
+            clearAutoAdvanceTimer();
+            autoAdvanceTimeout = setTimeout(() => {
+                autoAdvanceTimeout = null;
+                nextQuestion();
+            }, 1000);
         }
 
         function nextQuestion() {
+            clearAutoAdvanceTimer();
             if (userAnswers[currentQuestion] === null) {
                 alert('請選擇一個答案');
                 return;
@@ -664,6 +743,7 @@
         }
 
         function previousQuestion() {
+            clearAutoAdvanceTimer();
             if (currentQuestion > 0) {
                 showQuestion(currentQuestion - 1);
             }
@@ -676,6 +756,7 @@
         }
 
         function showResults() {
+            clearAutoAdvanceTimer();
             score = 0;
             for (let i = 0; i < selectedQuestionCount; i++) {
                 const questionIndex = selectedQuestions[i];
@@ -730,17 +811,20 @@
         }
 
         function restartTest() {
+            clearAutoAdvanceTimer();
             resultContainer.classList.remove('active');
             questionContainer.classList.remove('active');
             questionContainer.innerHTML = '';
             progressBar.style.display = 'none';
             progressFill.style.width = '0%';
 
-            selectedQuestionCount = Math.min(defaultQuestionCount, questions.length || defaultQuestionCount);
+            const total = questions.length;
+            selectedQuestionCount = Math.min(defaultQuestionCount, total || defaultQuestionCount);
             userAnswers = [];
             selectedQuestions = [];
             currentQuestion = 0;
             score = 0;
+            answerOrders = [];
 
             if (quizData && quizData.contentHtml) {
                 contentText.style.display = 'block';

@@ -225,7 +225,7 @@
             </div>
 
             <div class="chapters-grid">
-                <div class="chapter-card" onclick="location.href='quiz.html?quiz=jianjia'">
+                <div class="chapter-card" data-quiz="jianjia" onclick="location.href='quiz.html?quiz=jianjia'">
                     <div class="chapter-number">1</div>
                     <div class="chapter-title">蒹葭</div>
                     <div class="chapter-description">
@@ -233,12 +233,12 @@
                         意境深遠，被譽為《詩經》中最美的愛情詩之一。
                     </div>
                     <div class="chapter-info">
-                        <span class="question-count">📝 100題</span>
+                        <span class="question-count">📝 -- 題</span>
                         <button class="start-btn">開始測驗</button>
                     </div>
                 </div>
 
-                <div class="chapter-card" onclick="location.href='quiz.html?quiz=yufu'">
+                <div class="chapter-card" data-quiz="yufu" onclick="location.href='quiz.html?quiz=yufu'">
                     <div class="chapter-number">2</div>
                     <div class="chapter-title">漁夫</div>
                     <div class="chapter-description">
@@ -246,12 +246,12 @@
                         展現了堅守理想與隨遇而安兩種人生哲學的碰撞。
                     </div>
                     <div class="chapter-info">
-                        <span class="question-count">📝 100題</span>
+                        <span class="question-count">📝 -- 題</span>
                         <button class="start-btn">開始測驗</button>
                     </div>
                 </div>
 
-                <div class="chapter-card" onclick="location.href='quiz.html?quiz=saiqi'">
+                <div class="chapter-card" data-quiz="saiqi" onclick="location.href='quiz.html?quiz=saiqi'">
                     <div class="chapter-number">3</div>
                     <div class="chapter-title">賽琪小姐體內的魔鬼</div>
                     <div class="chapter-description">
@@ -259,12 +259,12 @@
                         融合心理學、哲學與神話，深入剖析人類內心世界。
                     </div>
                     <div class="chapter-info">
-                        <span class="question-count">📝 100題</span>
+                        <span class="question-count">📝 -- 題</span>
                         <button class="start-btn">開始測驗</button>
                     </div>
                 </div>
 
-                <div class="chapter-card" onclick="location.href='quiz.html?quiz=zhuzhiwu'">
+                <div class="chapter-card" data-quiz="zhuzhiwu" onclick="location.href='quiz.html?quiz=zhuzhiwu'">
                     <div class="chapter-number">4</div>
                     <div class="chapter-title">燭之武退秦師</div>
                     <div class="chapter-description">
@@ -272,12 +272,12 @@
                         不費一兵一卒成功化解鄭國危機的歷史事件。
                     </div>
                     <div class="chapter-info">
-                        <span class="question-count">📝 100題</span>
+                        <span class="question-count">📝 -- 題</span>
                         <button class="start-btn">開始測驗</button>
                     </div>
                 </div>
 
-                <div class="chapter-card" onclick="location.href='quiz.html?quiz=tiangong'">
+                <div class="chapter-card" data-quiz="tiangong" onclick="location.href='quiz.html?quiz=tiangong'">
                     <div class="chapter-number">5</div>
                     <div class="chapter-title">天工開物</div>
                     <div class="chapter-description">
@@ -285,12 +285,12 @@
                         涵蓋舟車、膏液、殺青等工藝的起源與發展。
                     </div>
                     <div class="chapter-info">
-                        <span class="question-count">📝 100題</span>
+                        <span class="question-count">📝 -- 題</span>
                         <button class="start-btn">開始測驗</button>
                     </div>
                 </div>
 
-                <div class="chapter-card" onclick="location.href='quiz.html?quiz=kongyiji'">
+                <div class="chapter-card" data-quiz="kongyiji" onclick="location.href='quiz.html?quiz=kongyiji'">
                     <div class="chapter-number">6</div>
                     <div class="chapter-title">孔乙己</div>
                     <div class="chapter-description">
@@ -298,7 +298,7 @@
                         深刻批判封建科舉制度和冷漠的社會環境。
                     </div>
                     <div class="chapter-info">
-                        <span class="question-count">📝 100題</span>
+                        <span class="question-count">📝 -- 題</span>
                         <button class="start-btn">開始測驗</button>
                     </div>
                 </div>
@@ -309,5 +309,29 @@
             <p>© 2025 中國古典文學測驗系統 | 傳承中華文化，弘揚經典精神</p>
         </div>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.chapter-card[data-quiz]').forEach(card => {
+                const quizId = card.dataset.quiz;
+                const countEl = card.querySelector('.question-count');
+                if (!quizId || !countEl) {
+                    return;
+                }
+                fetch(`data/${quizId}.json`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const total = Array.isArray(data.questions) ? data.questions.length : 0;
+                        countEl.textContent = total ? `📝 ${total} 題` : '📝 題庫';
+                        const startBtn = card.querySelector('.start-btn');
+                        if (startBtn && total) {
+                            startBtn.setAttribute('aria-label', `開始 ${total} 題測驗`);
+                        }
+                    })
+                    .catch(() => {
+                        countEl.textContent = '📝 題庫';
+                    });
+            });
+        });
+    </script>
 </body>
 </html>

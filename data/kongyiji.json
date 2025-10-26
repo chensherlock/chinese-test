@@ -1,12 +1,12 @@
 {
   "id": "kongyiji",
-  "pageTitle": "魯迅·孔乙己 互動測驗 - 100題",
+  "pageTitle": "魯迅·孔乙己 互動測驗",
   "title": "魯迅·孔乙己",
   "contentType": "info",
   "contentClass": "article-info",
   "contentHtml": "<h3>作品簡介</h3>\r\n                <p>\r\n                    <strong>作者：</strong>魯迅（1881-1936），原名周樹人<br>\r\n                    <strong>發表時間：</strong>1919年發表於《新青年》<br>\r\n                    <strong>收錄：</strong>短篇小說集《吶喊》<br>\r\n                    <strong>文體：</strong>短篇小說<br><br>\r\n\r\n                    <strong>故事梗概：</strong><br>\r\n                    小說以咸亨酒店小夥計「我」的視角，講述了一個名叫孔乙己的落魄讀書人的悲慘故事。\r\n                    孔乙己是唯一站著喝酒而穿長衫的人，他窮困潦倒，卻死要面子，\r\n                    常用「之乎者也」的話語炫耀自己讀過書。他因偷書被打斷了腿，\r\n                    最後坐著用手爬到酒店喝酒，從此再也沒有出現，大約真的死了。<br><br>\r\n\r\n                    <strong>主題：</strong>通過孔乙己這個人物，批判封建科舉制度對知識分子的毒害，\r\n                    揭露封建社會的冷漠和殘酷，以及下層民眾的麻木不仁。\r\n                </p>",
   "welcomeTitle": "歡迎參加《孔乙己》知識測驗",
-  "welcomeMessageHtml": "本測驗題庫共100題，涵蓋作品內容、人物形象、主題思想、<br>\r\n                寫作手法、社會背景等多個方面。<br><br>\r\n                請選擇測驗題數，祝你好運！",
+  "welcomeMessageHtml": "本測驗題庫共{count}題，涵蓋作品內容、人物形象、主題思想、<br>\r\n                寫作手法、社會背景等多個方面。<br><br>\r\n                請選擇測驗題數，祝你好運！",
   "questions": [
     {
       "question": "《孔乙己》的作者是誰？",
@@ -97,6 +97,26 @@
         "戲劇"
       ],
       "correct": 1
+    },
+    {
+      "question": "「咸亨酒店」中的「亨」注音是？",
+      "options": [
+        "ㄏㄥ",
+        "ㄒㄧㄤ",
+        "ㄏㄥˋ",
+        "ㄏㄤ"
+      ],
+      "correct": 0
+    },
+    {
+      "question": "「茴香豆」的「茴」應讀作？",
+      "options": [
+        "ㄏㄨㄟˊ",
+        "ㄍㄨㄟˋ",
+        "ㄏㄨㄞˊ",
+        "ㄏㄨㄟˋ"
+      ],
+      "correct": 0
     },
     {
       "question": "魯迅創作的主要目的是？",

@@ -28,9 +28,10 @@ Each test HTML file follows an identical structure:
    - Text content shown on start screen, hidden during quiz
 
 2. **Quiz Flow**
-   - Start screen → 100 questions → Results screen
-   - Progress bar tracks completion
+   - Start screen (with question count selection) → Selected number of questions → Results screen
+   - Progress bar tracks completion based on selected count
    - Questions displayed one at a time
+   - Questions are randomly selected from the full 100-question bank
 
 3. **JavaScript Structure**
    ```javascript
@@ -38,14 +39,17 @@ Each test HTML file follows an identical structure:
    let currentQuestion = 0;
    let userAnswers = [];
    let score = 0;
+   let selectedQuestionCount = 100;  // User-selected: 20, 50, or 100
+   let selectedQuestions = [];        // Randomly selected indices
 
    // Key functions:
-   startTest()        // Hides intro, shows first question
-   showQuestion(index) // Renders question UI
+   selectQuestionCount(count) // Updates selected count, highlights choice
+   startTest()        // Randomly selects questions, hides intro, shows first question
+   showQuestion(index) // Renders question UI using selectedQuestions[index]
    selectOption(i)    // Records answer, shows feedback
    nextQuestion()     // Advances or shows results
    previousQuestion() // Goes back
-   updateProgress()   // Updates progress bar
+   updateProgress()   // Updates progress bar based on selectedQuestionCount
    showResults()      // Calculates and displays score
    restartTest()      // Resets to start screen
    ```
@@ -64,6 +68,7 @@ Each test HTML file follows an identical structure:
    - Responsive grid layout
    - Inline CSS within `<style>` tags
    - Microsoft YaHei and SimSun fonts for Chinese text
+   - Question count selector buttons with `.count-option` and `.count-option.selected` classes
 
 ## Creating New Test Modules
 
@@ -81,10 +86,31 @@ When adding a new test unit:
 
 ## Key Behaviors
 
+### Question Count Selection
+- **Feature**: Users can choose to test with 20, 50, or 100 questions
+- **Implementation**:
+  - Three buttons on start screen: 20題, 50題, 100題
+  - Default selection: 100題 (`.selected` class applied)
+  - Clicking a button calls `selectQuestionCount(count)` which:
+    - Updates `selectedQuestionCount` variable
+    - Toggles `.selected` class styling
+  - When test starts, uses **Fisher-Yates shuffle algorithm** to randomly select subset:
+    ```javascript
+    const allIndices = [...Array(questions.length).keys()];
+    for (let i = allIndices.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [allIndices[i], allIndices[j]] = [allIndices[j], allIndices[i]];
+    }
+    selectedQuestions = allIndices.slice(0, selectedQuestionCount);
+    ```
+  - All question display, navigation, and scoring use `selectedQuestions` array mapping
+
 ### Start Screen Flow
 - Original text/info is visible
+- Question count selector visible with default 100題 selected
 - Progress bar is hidden (`display: none`)
 - Click "開始測驗" triggers:
+  - Randomly select questions based on `selectedQuestionCount`
   - Hide `#startScreen`
   - Hide article text (`#poemText` or `#articleInfo`)
   - Show progress bar
@@ -97,7 +123,7 @@ When adding a new test unit:
 - Navigation allows going back to review
 
 ### Results Screen
-- Shows score as fraction (e.g., "85/100")
+- Shows score as fraction based on selected count (e.g., "17/20", "42/50", or "85/100")
 - Percentage calculated to 1 decimal place
 - Grading messages based on percentage:
   - ≥90%: 優秀
